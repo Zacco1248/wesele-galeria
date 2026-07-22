@@ -1,0 +1,30 @@
+# Alternatywa dla PM2 — uruchomienie przez systemd.
+# (Na VPS MoneyLet standardem jest PM2; ten plik to opcja dla lekkiego setupu.)
+#
+# Instalacja:
+#   sudo cp deploy/wesele-galeria.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now wesele-galeria
+#   sudo systemctl status wesele-galeria
+
+[Unit]
+Description=Galeria slubna (SvelteKit + R2)
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/apps/wesele-galeria
+EnvironmentFile=/home/ubuntu/apps/wesele-galeria/.env
+ExecStart=/usr/bin/node build/index.js
+Restart=on-failure
+RestartSec=5
+# Ogranicz pamięć podobnie jak w PM2.
+MemoryMax=700M
+# Utwardzenie
+NoNewPrivileges=true
+ProtectSystem=full
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
