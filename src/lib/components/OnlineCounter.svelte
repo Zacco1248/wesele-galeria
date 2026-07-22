@@ -1,14 +1,16 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 
-	let online = $state(0);
-	let mounted = $state(false);
+	// The current viewer is always at least one person online, so we start at 1
+	// and render immediately (works even during SSR / before the first fetch).
+	// The real count is fetched and refreshed on a timer.
+	let online = $state(1);
 
 	function clientId(): string {
 		try {
 			let id = localStorage.getItem('wesele:cid');
 			if (!id) {
-				id = (crypto.randomUUID?.() ?? Math.random().toString(36).slice(2) + Date.now().toString(36));
+				id = crypto.randomUUID?.() ?? Math.random().toString(36).slice(2) + Date.now().toString(36);
 				localStorage.setItem('wesele:cid', id);
 			}
 			return id;
@@ -26,11 +28,10 @@
 			});
 			if (res.ok) {
 				const data = await res.json();
-				online = data.online;
-				mounted = true;
+				if (typeof data.online === 'number' && data.online > 0) online = data.online;
 			}
 		} catch {
-			/* offline — ignore */
+			/* offline — keep last known value */
 		}
 	}
 
@@ -40,15 +41,15 @@
 		const t = setInterval(() => beat(id), 20_000);
 		return () => clearInterval(t);
 	});
+
+	const label = $derived(online === 1 ? 'gość online' : 'gości online');
 </script>
 
-{#if mounted && online > 0}
-	<div class="online" title="Goście przeglądający galerię teraz">
-		<span class="dot" aria-hidden="true"></span>
-		{online}
-		{online === 1 ? 'gość online' : online < 5 ? 'gości online' : 'gości online'}
-	</div>
-{/if}
+<div class="online" title="Goście przeglądający galerię teraz">
+	<span class="dot" aria-hidden="true"></span>
+	{online}
+	{label}
+</div>
 
 <style>
 	.online {
@@ -63,6 +64,7 @@
 		font-size: 0.85rem;
 		color: var(--ink-soft);
 		font-weight: 600;
+		font-variant-numeric: tabular-nums;
 	}
 	.dot {
 		width: 8px;
