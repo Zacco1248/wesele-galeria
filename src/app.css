@@ -180,6 +180,7 @@ button {
 }
 .container-narrow {
 	max-width: 560px;
+	margin-inline: auto;
 }
 .card {
 	background: var(--card);

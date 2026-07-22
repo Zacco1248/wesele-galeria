@@ -74,7 +74,7 @@
 
 <footer class="footer">
 	<div class="container center muted">
-		<p>Zrobione z miłością · dziękujemy, że jesteście z nami 🤍</p>
+		<p>Dziękujemy, że jesteście z nami 🤍</p>
 	</div>
 </footer>
 
@@ -86,15 +86,10 @@
 		display: flex;
 		justify-content: flex-end;
 	}
-	/* subtle, out-of-focus placement for the live counter */
+	/* visible but modest, kept in the corner (out of the center of attention) */
 	.topbar :global(.online) {
-		background: transparent;
-		border-color: transparent;
-		box-shadow: none;
-		color: var(--ink-faint);
-		font-weight: 500;
 		font-size: 0.8rem;
-		padding: 0.2rem 0.3rem;
+		padding: 0.3rem 0.75rem;
 	}
 	.hero {
 		text-align: center;
@@ -108,11 +103,10 @@
 		margin: 0 0 0.6rem;
 	}
 	.hero h1 {
-		font-size: clamp(2.2rem, 9vw, 3.2rem);
+		font-size: clamp(1.7rem, 8.5vw, 3.2rem);
 		color: var(--ink);
-		margin: 0 auto;
-		max-width: 12ch;
-		text-wrap: balance;
+		margin: 0;
+		white-space: nowrap;
 	}
 	.subtitle {
 		color: var(--ink-soft);
