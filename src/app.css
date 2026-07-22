@@ -4,20 +4,22 @@
    ========================================================================= */
 
 :root {
-	/* palette */
-	--paper: #faf6f0;
-	--paper-2: #f3ece2;
-	--card: #ffffff;
-	--ink: #3a322b;
-	--ink-soft: #6f6459;
-	--ink-faint: #9a8f82;
-	--line: #e7ddd0;
-	--gold: #b98a5e;
-	--gold-deep: #9a6f45;
-	--rose: #c98a86;
+	/* palette — warm wedding: marigold, orange, terracotta on cream + beige, floral */
+	--paper: #fdf5e8;
+	--paper-2: #f6e6cd;
+	--card: #fffdf8;
+	--ink: #4a3a28;
+	--ink-soft: #7c6a51;
+	--ink-faint: #a9977c;
+	--line: #ecdcc2;
+	--gold: #e0914a; /* warm orange (primary) */
+	--gold-deep: #c96a2b; /* terracotta */
+	--marigold: #f4b63a; /* warm yellow accent */
+	--rose: #e78d74; /* soft coral flower */
+	--leaf: #86a06a; /* sage green for foliage */
 	--accent: var(--gold);
 	--danger: #b4453c;
-	--ok: #4f7a55;
+	--ok: #6f8f5e;
 
 	/* surfaces */
 	--shadow-sm: 0 1px 2px rgba(58, 50, 43, 0.06), 0 1px 3px rgba(58, 50, 43, 0.08);
@@ -50,7 +52,9 @@ body {
 
 body {
 	background:
-		radial-gradient(1200px 600px at 50% -10%, #fff 0%, rgba(255, 255, 255, 0) 60%),
+		radial-gradient(900px 480px at 50% -8%, #fff7ea 0%, rgba(255, 247, 234, 0) 62%),
+		radial-gradient(700px 500px at 100% 0%, rgba(244, 182, 58, 0.14) 0%, rgba(244, 182, 58, 0) 55%),
+		radial-gradient(700px 500px at 0% 12%, rgba(231, 141, 116, 0.12) 0%, rgba(231, 141, 116, 0) 55%),
 		linear-gradient(180deg, var(--paper) 0%, var(--paper-2) 100%);
 	background-attachment: fixed;
 	color: var(--ink);

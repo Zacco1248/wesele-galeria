@@ -61,7 +61,8 @@ Filmy weselne bywają większe, więc **plik nigdy nie przechodzi przez VPS ani 
 
 **Gość (mobile-first):** landing po QR, opcjonalne imię (zapamiętane w `localStorage`),
 wybór wielu plików naraz, podgląd + pasek postępu per plik z ponawianiem, wspólna galeria
-z lazy-load i lightboxem (zdjęcia + odtwarzacz wideo), licznik wspomnień, serduszka.
+z lazy-load i lightboxem (zdjęcia + odtwarzacz wideo), licznik wspomnień, serduszka,
+**licznik gości online** (na żywo), ciepły motyw kwiatowy (marigold/pomarańcz/beż).
 
 **Admin (`/admin`, hasło):** podgląd wszystkich plików z metadanymi (imię, data, rozmiar,
 typ), pobieranie całości jako **ZIP strumieniowo**, ukrywanie (soft-hide) i usuwanie
@@ -137,11 +138,11 @@ pm2 startup                            # (raz) autostart po reboocie
 curl -s http://127.0.0.1:3100/health
 ```
 
-Aktualizacja później:
+Aktualizacja później — jednym poleceniem (git pull → ci → build → pm2 reload → health):
 
 ```bash
 cd /home/ubuntu/apps/wesele-galeria
-git pull && npm ci && npm run build && pm2 reload wesele-galeria
+bash deploy/deploy.sh
 ```
 
 Alternatywnie zamiast PM2 — systemd: patrz [`deploy/wesele-galeria.service`](deploy/wesele-galeria.service).

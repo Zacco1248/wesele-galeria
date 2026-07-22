@@ -3,6 +3,8 @@
 	import type { PageData } from './$types';
 	import Uploader from '$lib/components/Uploader.svelte';
 	import Gallery from '$lib/components/Gallery.svelte';
+	import Florals from '$lib/components/Florals.svelte';
+	import OnlineCounter from '$lib/components/OnlineCounter.svelte';
 
 	let { data }: { data: PageData } = $props();
 
@@ -29,15 +31,20 @@
 
 <header class="hero">
 	<div class="container">
+		<Florals variant="sprig" width="200" />
 		<p class="kicker">Wspólna galeria wspomnień</p>
 		<h1>{data.event.title}</h1>
 		<p class="subtitle">{data.event.subtitle}</p>
-		<div class="ornament" aria-hidden="true">❦</div>
-		<button class="btn btn-primary" onclick={scrollToUpload}>Dodaj zdjęcia i filmy</button>
-		<p class="counter">
-			<strong>{data.total}</strong>
-			{data.total === 1 ? 'wspomnienie dodane' : 'wspomnień dodanych'}
-		</p>
+		<div class="hero-cta">
+			<button class="btn btn-primary" onclick={scrollToUpload}>Dodaj zdjęcia i filmy</button>
+		</div>
+		<div class="hero-stats">
+			<p class="counter">
+				<strong>{data.total}</strong>
+				{data.total === 1 ? 'wspomnienie dodane' : 'wspomnień dodanych'}
+			</p>
+			<OnlineCounter />
+		</div>
 	</div>
 </header>
 
@@ -54,7 +61,7 @@
 		</p>
 	</section>
 
-	<div class="ornament section-divider" aria-hidden="true">✦</div>
+	<div class="section-divider"><Florals variant="divider" width="240" /></div>
 
 	<section class="gallery-section">
 		<h2 class="center gallery-title">Nasze wspólne wspomnienia</h2>
@@ -88,15 +95,20 @@
 	.subtitle {
 		color: var(--ink-soft);
 		font-size: 1.05rem;
-		margin: 0.6rem 0 0.2rem;
+		margin: 0.6rem 0 1.3rem;
 	}
-	.ornament {
-		color: var(--gold);
-		font-size: 1.2rem;
-		margin: 0.8rem 0 1.3rem;
+	.hero-cta {
+		margin-top: 0.4rem;
+	}
+	.hero-stats {
+		margin-top: 1.3rem;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.7rem;
 	}
 	.counter {
-		margin-top: 1.2rem;
+		margin: 0;
 		color: var(--ink-soft);
 		font-size: 0.95rem;
 	}
@@ -113,8 +125,7 @@
 		font-size: 0.85rem;
 	}
 	.section-divider {
-		margin: 2.5rem 0 1.5rem;
-		font-size: 1rem;
+		margin: 2.5rem 0 1.8rem;
 	}
 	.gallery-title {
 		font-size: clamp(1.6rem, 6vw, 2.2rem);
