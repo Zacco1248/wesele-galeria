@@ -29,6 +29,12 @@
 	<meta name="description" content="Wspólna galeria zdjęć i filmów z wesela." />
 </svelte:head>
 
+<div class="topbar">
+	<div class="container topbar-inner">
+		<OnlineCounter />
+	</div>
+</div>
+
 <header class="hero">
 	<div class="container">
 		<Florals variant="sprig" width="200" />
@@ -38,13 +44,10 @@
 		<div class="hero-cta">
 			<button class="btn btn-primary" onclick={scrollToUpload}>Dodaj zdjęcia i filmy</button>
 		</div>
-		<div class="hero-stats">
-			<p class="counter">
-				<strong>{data.total}</strong>
-				{data.total === 1 ? 'wspomnienie dodane' : 'wspomnień dodanych'}
-			</p>
-			<OnlineCounter />
-		</div>
+		<p class="counter">
+			<strong>{data.total}</strong>
+			{data.total === 1 ? 'wspomnienie dodane' : 'wspomnień dodanych'}
+		</p>
 	</div>
 </header>
 
@@ -76,9 +79,26 @@
 </footer>
 
 <style>
+	.topbar {
+		padding: 0.7rem 0 0;
+	}
+	.topbar-inner {
+		display: flex;
+		justify-content: flex-end;
+	}
+	/* subtle, out-of-focus placement for the live counter */
+	.topbar :global(.online) {
+		background: transparent;
+		border-color: transparent;
+		box-shadow: none;
+		color: var(--ink-faint);
+		font-weight: 500;
+		font-size: 0.8rem;
+		padding: 0.2rem 0.3rem;
+	}
 	.hero {
 		text-align: center;
-		padding: clamp(2.5rem, 8vw, 4.5rem) 0 clamp(1.5rem, 5vw, 2.5rem);
+		padding: clamp(1.4rem, 5vw, 2.6rem) 0 clamp(1.5rem, 5vw, 2.5rem);
 	}
 	.kicker {
 		text-transform: uppercase;
@@ -88,9 +108,11 @@
 		margin: 0 0 0.6rem;
 	}
 	.hero h1 {
-		font-size: clamp(2.6rem, 12vw, 4.2rem);
+		font-size: clamp(2.2rem, 9vw, 3.2rem);
 		color: var(--ink);
-		margin: 0;
+		margin: 0 auto;
+		max-width: 12ch;
+		text-wrap: balance;
 	}
 	.subtitle {
 		color: var(--ink-soft);
@@ -100,15 +122,8 @@
 	.hero-cta {
 		margin-top: 0.4rem;
 	}
-	.hero-stats {
-		margin-top: 1.3rem;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		gap: 0.7rem;
-	}
 	.counter {
-		margin: 0;
+		margin: 1.3rem 0 0;
 		color: var(--ink-soft);
 		font-size: 0.95rem;
 	}
