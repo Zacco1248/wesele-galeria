@@ -12,8 +12,9 @@ import { env } from '$env/dynamic/private';
 const FFMPEG = env.FFMPEG_PATH?.trim() || 'ffmpeg';
 const FFPROBE = env.FFPROBE_PATH?.trim() || 'ffprobe';
 
-const THUMB_MAX = 1080; // longest edge of gallery thumbnail
-const WEBP_QUALITY = 72;
+const THUMB_MAX = 640; // longest edge of gallery thumbnail (grid cells are small; 640 is crisp on retina)
+const WEBP_QUALITY = 70;
+const WEBP_EFFORT = 3; // lower effort = faster encode, negligible size difference at this scale
 
 export interface ImageResult {
 	thumb: Buffer;
@@ -26,7 +27,7 @@ export async function makeImageThumb(input: Buffer): Promise<ImageResult> {
 	const meta = await pipeline.metadata();
 	const thumb = await pipeline
 		.resize({ width: THUMB_MAX, height: THUMB_MAX, fit: 'inside', withoutEnlargement: true })
-		.webp({ quality: WEBP_QUALITY })
+		.webp({ quality: WEBP_QUALITY, effort: WEBP_EFFORT })
 		.toBuffer();
 	// account for EXIF orientation swap
 	const swap = meta.orientation && meta.orientation >= 5;
@@ -76,7 +77,7 @@ export async function makeVideoPoster(path: string, seekSec = 1): Promise<Buffer
 			'pipe:1'
 		]);
 		if (!png.length) return null;
-		return await sharp(png).webp({ quality: WEBP_QUALITY }).toBuffer();
+		return await sharp(png).webp({ quality: WEBP_QUALITY, effort: WEBP_EFFORT }).toBuffer();
 	} catch {
 		return null;
 	}

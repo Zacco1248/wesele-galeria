@@ -108,8 +108,21 @@ export async function headObject(key: string): Promise<HeadInfo | null> {
 	}
 }
 
-export async function putObject(key: string, body: Buffer, contentType: string): Promise<void> {
-	await r2().send(new PutObjectCommand({ Bucket: BUCKET(), Key: key, Body: body, ContentType: contentType }));
+export async function putObject(
+	key: string,
+	body: Buffer,
+	contentType: string,
+	cacheControl?: string
+): Promise<void> {
+	await r2().send(
+		new PutObjectCommand({
+			Bucket: BUCKET(),
+			Key: key,
+			Body: body,
+			ContentType: contentType,
+			...(cacheControl ? { CacheControl: cacheControl } : {})
+		})
+	);
 }
 
 export async function deleteObject(key: string): Promise<void> {

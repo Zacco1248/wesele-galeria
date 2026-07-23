@@ -31,19 +31,27 @@ export function notifyWorker(): void {
 	void drain();
 }
 
+// Process several items at once so a burst of uploads (whole table of guests
+// snapping photos) generates thumbnails in parallel instead of one-by-one.
+const CONCURRENCY = 3;
+
 async function drain(): Promise<void> {
 	if (running) return;
 	if (!r2Configured()) return;
 	running = true;
 	pokePending = false;
 	try {
-		let row = nextPending();
-		while (row) {
-			await processOne(row).catch((e) => {
-				console.error(`[worker] failed ${row!.id}:`, e instanceof Error ? e.message : e);
-				markProcessed(row!.id); // avoid infinite retry loop
-			});
-			row = nextPending();
+		let batch = nextPending(CONCURRENCY);
+		while (batch.length) {
+			await Promise.all(
+				batch.map((row) =>
+					processOne(row).catch((e) => {
+						console.error(`[worker] failed ${row.id}:`, e instanceof Error ? e.message : e);
+						markProcessed(row.id); // avoid infinite retry loop
+					})
+				)
+			);
+			batch = nextPending(CONCURRENCY);
 		}
 		// if something was queued while we were finishing, go again
 		if (pokePending) {
@@ -55,22 +63,25 @@ async function drain(): Promise<void> {
 	}
 }
 
-function nextPending(): UploadRow | undefined {
+function nextPending(limit: number): UploadRow[] {
 	return db()
-		.prepare(`SELECT * FROM uploads WHERE processed = 0 ORDER BY created_at ASC LIMIT 1`)
-		.get() as UploadRow | undefined;
+		.prepare(`SELECT * FROM uploads WHERE processed = 0 ORDER BY created_at ASC LIMIT ?`)
+		.all(limit) as UploadRow[];
 }
 
 function markProcessed(id: string): void {
 	db().prepare(`UPDATE uploads SET processed = 1 WHERE id = ?`).run(id);
 }
 
+// Derived thumbs/posters never change for a given id → cache them forever.
+const IMMUTABLE = 'public, max-age=31536000, immutable';
+
 async function processOne(row: UploadRow): Promise<void> {
 	if (row.kind === 'image') {
 		const buf = await streamToBuffer(await getObjectStream(row.r2_key));
 		const { thumb, width, height } = await makeImageThumb(buf);
 		const tkey = thumbKey(row.id);
-		await putObject(tkey, thumb, 'image/webp');
+		await putObject(tkey, thumb, 'image/webp', IMMUTABLE);
 		db()
 			.prepare(`UPDATE uploads SET thumb_key = ?, width = ?, height = ?, processed = 1 WHERE id = ?`)
 			.run(tkey, width, height, row.id);
@@ -82,7 +93,7 @@ async function processOne(row: UploadRow): Promise<void> {
 		let pkey: string | null = null;
 		if (poster) {
 			pkey = posterKey(row.id);
-			await putObject(pkey, poster, 'image/webp');
+			await putObject(pkey, poster, 'image/webp', IMMUTABLE);
 		}
 		db()
 			.prepare(
