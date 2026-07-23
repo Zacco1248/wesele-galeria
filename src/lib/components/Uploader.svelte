@@ -16,6 +16,7 @@
 	let queue = $state<UploadItem[]>([]);
 	let uploading = $state(false);
 	let fileInput = $state<HTMLInputElement | null>(null);
+	let cameraInput = $state<HTMLInputElement | null>(null);
 	let localId = 0;
 
 	const CONCURRENCY = 2;
@@ -71,6 +72,7 @@
 			];
 		}
 		if (fileInput) fileInput.value = '';
+		if (cameraInput) cameraInput.value = ''; // allow retaking the same shot
 		void run();
 	}
 
@@ -141,19 +143,38 @@
 		bind:value={guestName}
 	/>
 
-	<label class="dropzone" class:busy={uploading}>
-		<input
-			bind:this={fileInput}
-			type="file"
-			accept="image/*,video/*"
-			multiple
-			onchange={(e) => addFiles((e.currentTarget as HTMLInputElement).files)}
-			hidden
-		/>
-		<span class="dz-emoji">📸</span>
-		<span class="dz-title">Dodaj zdjęcia i filmy</span>
-		<span class="dz-sub muted">Możesz wybrać wiele naraz · zdjęcia do {imageMb} MB · wideo do {videoMb} MB</span>
-	</label>
+	<!-- hidden inputs: camera capture opens the camera directly; the other picks from the gallery/files -->
+	<input
+		bind:this={cameraInput}
+		type="file"
+		accept="image/*,video/*"
+		capture="environment"
+		onchange={(e) => addFiles((e.currentTarget as HTMLInputElement).files)}
+		hidden
+	/>
+
+	<div class="pickers">
+		<button type="button" class="picker cam" onclick={() => cameraInput?.click()}>
+			<span class="pk-emoji">📷</span>
+			<span class="pk-title">Zrób zdjęcie</span>
+			<span class="pk-sub">Aparatem, na żywo</span>
+		</button>
+
+		<label class="picker gallery" class:busy={uploading}>
+			<input
+				bind:this={fileInput}
+				type="file"
+				accept="image/*,video/*"
+				multiple
+				onchange={(e) => addFiles((e.currentTarget as HTMLInputElement).files)}
+				hidden
+			/>
+			<span class="pk-emoji">🖼️</span>
+			<span class="pk-title">Wybierz z galerii</span>
+			<span class="pk-sub">Wiele naraz · zdjęcia i filmy</span>
+		</label>
+	</div>
+	<p class="limits muted">zdjęcia do {imageMb} MB · wideo do {videoMb} MB</p>
 
 	{#if queue.length > 0}
 		<div class="status-row">
@@ -203,35 +224,67 @@
 		flex-direction: column;
 		gap: 0.5rem;
 	}
-	.dropzone {
+	.pickers {
 		margin-top: 0.9rem;
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 0.6rem;
+	}
+	.picker {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		gap: 0.35rem;
-		padding: 1.9rem 1.1rem;
+		gap: 0.25rem;
+		padding: 1.5rem 0.9rem;
 		border: 2px dashed #f0cf6a;
 		border-radius: 18px;
 		background: linear-gradient(180deg, #fffbe9, #fff7d6);
 		cursor: pointer;
 		text-align: center;
-		transition: border-color 0.15s ease, background 0.15s ease;
+		font: inherit;
+		color: inherit;
+		transition: border-color 0.15s ease, background 0.15s ease, transform 0.08s ease;
 	}
-	.dropzone:hover {
+	.picker:hover {
 		border-color: var(--gold);
 		background: linear-gradient(180deg, #fff8d8, #ffefb0);
 	}
-	.dz-emoji {
-		font-size: 2.1rem;
+	.picker:active {
+		transform: translateY(1px);
 	}
-	.dz-title {
+	.picker.cam {
+		border-style: solid;
+		border-color: var(--gold);
+		background: linear-gradient(180deg, var(--marigold), var(--marigold-2));
+	}
+	.picker.cam .pk-title {
+		color: var(--btn-ink);
+	}
+	.picker.cam .pk-sub {
+		color: #8a5e12;
+	}
+	.pk-emoji {
+		font-size: 1.8rem;
+	}
+	.pk-title {
 		font-weight: 800;
-		font-size: 1.12rem;
+		font-size: 1.02rem;
 		color: var(--ink-strong);
+		line-height: 1.15;
 	}
-	.dz-sub {
-		font-size: 0.84rem;
+	.pk-sub {
+		font-size: 0.76rem;
 		color: var(--ink-faint);
+	}
+	.limits {
+		margin: 0.6rem 0 0;
+		text-align: center;
+		font-size: 0.8rem;
+	}
+	@media (max-width: 360px) {
+		.pickers {
+			grid-template-columns: 1fr;
+		}
 	}
 	.status-row {
 		display: flex;
