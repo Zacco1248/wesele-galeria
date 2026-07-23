@@ -95,8 +95,8 @@
 <section class="gallery" aria-label="Wspólna galeria">
 	{#if items.length === 0}
 		<div class="empty card">
-			<p class="empty-emoji">📷</p>
-			<p>Galeria jest jeszcze pusta.</p>
+			<p class="empty-emoji">🌻</p>
+			<p class="empty-title">Galeria jest jeszcze pusta</p>
 			<p class="muted">Bądź pierwszą osobą, która doda wspomnienie!</p>
 		</div>
 	{:else}
@@ -262,12 +262,19 @@
 		text-overflow: ellipsis;
 	}
 	.empty {
-		padding: 3rem 1.5rem;
+		padding: 2.9rem 1.5rem;
 		text-align: center;
 	}
 	.empty-emoji {
-		font-size: 2.5rem;
-		margin: 0 0 0.5rem;
+		font-size: 3rem;
+		margin: 0 0 0.6rem;
+		line-height: 1;
+	}
+	.empty-title {
+		font-weight: 800;
+		font-size: 1.05rem;
+		color: var(--ink-strong);
+		margin: 0 0 0.3rem;
 	}
 	.sentinel {
 		height: 48px;

@@ -4,36 +4,49 @@
    ========================================================================= */
 
 :root {
-	/* palette — warm wedding: marigold, orange, terracotta on cream + beige, floral */
-	--paper: #fdf5e8;
-	--paper-2: #f6e6cd;
-	--card: #fffdf8;
-	--ink: #4a3a28;
-	--ink-soft: #7c6a51;
-	--ink-faint: #a9977c;
-	--line: #ecdcc2;
-	--gold: #e0914a; /* warm orange (primary) */
-	--gold-deep: #c96a2b; /* terracotta */
-	--marigold: #f4b63a; /* warm yellow accent */
-	--rose: #e78d74; /* soft coral flower */
-	--leaf: #86a06a; /* sage green for foliage */
+	/* palette — sunny golden wedding (from the "Galeria Wesele" design) */
+	--paper: #fdf6e2;
+	--paper-2: #fdf3d0;
+	--card: #ffffff;
+	--card-translucent: rgba(255, 255, 255, 0.86);
+	--ink: #6b5836; /* body text */
+	--ink-strong: #5a4525; /* headings */
+	--ink-soft: #8a7345;
+	--ink-faint: #a3894e;
+	--ink-faintest: #b39c6c;
+	--line: #f6e3a0;
+	--line-2: #f0dc9a;
+	--gold: #eab019; /* primary gold accent */
+	--gold-deep: #c9781a; /* links / deep accent */
+	--gold-deeper: #a35f10;
+	--marigold: #ffd93b; /* bright yellow (buttons) */
+	--marigold-2: #f6b81e;
+	--btn-ink: #6b4a00; /* dark gold text on yellow buttons */
+
+	/* flower colors — kept as they were, decoupled from the UI palette */
+	--fl-marigold: #f4b63a;
+	--fl-gold: #e0914a;
+	--fl-gold-deep: #c96a2b;
+	--fl-rose: #e78d74;
+	--fl-leaf: #86a06a;
+
 	--accent: var(--gold);
 	--danger: #b4453c;
-	--ok: #6f8f5e;
+	--ok: #4caf50;
 
-	/* surfaces */
-	--shadow-sm: 0 1px 2px rgba(58, 50, 43, 0.06), 0 1px 3px rgba(58, 50, 43, 0.08);
-	--shadow-md: 0 4px 14px rgba(58, 50, 43, 0.1);
-	--shadow-lg: 0 18px 50px rgba(58, 50, 43, 0.22);
+	/* surfaces — soft golden shadows */
+	--shadow-sm: 0 4px 14px rgba(220, 180, 60, 0.14);
+	--shadow-md: 0 14px 36px rgba(220, 175, 50, 0.16);
+	--shadow-lg: 0 18px 44px rgba(220, 175, 50, 0.22);
 
 	/* type */
 	--font-serif: 'Cormorant Garamond', 'Georgia', 'Times New Roman', serif;
-	--font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+	--font-sans: 'Mulish', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 
-	/* geometry */
-	--radius: 14px;
-	--radius-sm: 10px;
-	--radius-lg: 22px;
+	/* geometry — rounder, softer per the design */
+	--radius: 20px;
+	--radius-sm: 14px;
+	--radius-lg: 24px;
 	--tap: 46px;
 
 	color-scheme: light;
@@ -52,10 +65,9 @@ body {
 
 body {
 	background:
-		radial-gradient(760px 460px at 50% -6%, rgba(244, 182, 58, 0.28) 0%, rgba(244, 182, 58, 0) 58%),
-		radial-gradient(700px 520px at 100% 4%, rgba(244, 182, 58, 0.2) 0%, rgba(244, 182, 58, 0) 55%),
-		radial-gradient(680px 500px at 0% 16%, rgba(231, 141, 116, 0.14) 0%, rgba(231, 141, 116, 0) 55%),
-		linear-gradient(180deg, var(--paper) 0%, var(--paper-2) 100%);
+		radial-gradient(220px 220px at calc(100% + 60px) -60px, rgba(255, 214, 61, 0.55), rgba(255, 214, 61, 0) 70%),
+		radial-gradient(200px 200px at -70px 180px, rgba(255, 180, 120, 0.28), rgba(255, 180, 120, 0) 70%),
+		linear-gradient(180deg, #fff6d6 0%, #fdeeb8 22%, #fdf3d0 55%, #fdf6e2 100%);
 	background-attachment: fixed;
 	color: var(--ink);
 	font-family: var(--font-sans);
@@ -70,15 +82,19 @@ h1,
 h2,
 h3 {
 	font-family: var(--font-serif);
-	font-weight: 600;
-	letter-spacing: 0.01em;
-	line-height: 1.1;
+	font-weight: 700;
+	letter-spacing: 0.005em;
+	line-height: 1.08;
 	margin: 0;
+	color: var(--ink-strong);
 }
 
 a {
 	color: var(--gold-deep);
 	text-decoration: none;
+}
+a:hover {
+	color: var(--gold-deeper);
 }
 
 img,
@@ -120,15 +136,16 @@ button {
 	cursor: not-allowed;
 }
 .btn-primary {
-	background: linear-gradient(180deg, var(--marigold) 0%, var(--gold) 52%, var(--gold-deep) 100%);
-	color: #fff;
-	box-shadow: var(--shadow-md);
+	background: linear-gradient(180deg, var(--marigold), var(--marigold-2));
+	color: var(--btn-ink);
+	font-weight: 700;
+	box-shadow: 0 10px 26px rgba(240, 180, 20, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.6);
 }
 .btn-primary:hover:not(:disabled) {
-	box-shadow: var(--shadow-lg);
+	box-shadow: 0 14px 32px rgba(240, 180, 20, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.6);
 }
 .btn-ghost {
-	background: var(--card);
+	background: var(--card-translucent);
 	color: var(--ink);
 	border-color: var(--line);
 	box-shadow: var(--shadow-sm);
@@ -149,26 +166,29 @@ button {
 .field {
 	width: 100%;
 	min-height: var(--tap);
-	padding: 0.7rem 1rem;
+	padding: 0.85rem 1rem;
 	border-radius: var(--radius-sm);
-	border: 1px solid var(--line);
-	background: var(--card);
+	border: 1.5px solid var(--line-2);
+	background: #fffdf6;
 	color: var(--ink);
 	font-size: 1rem;
+	font-family: inherit;
 	transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.field::placeholder {
+	color: #c8b28a;
 }
 .field:focus {
 	outline: none;
-	border-color: var(--gold);
-	box-shadow: 0 0 0 3px rgba(185, 138, 94, 0.18);
+	border-color: #f2c530;
+	box-shadow: 0 0 0 4px rgba(255, 214, 61, 0.25);
 }
 .label {
 	display: block;
-	font-size: 0.82rem;
-	font-weight: 600;
-	color: var(--ink-soft);
-	margin-bottom: 0.4rem;
-	letter-spacing: 0.02em;
+	font-size: 0.87rem;
+	font-weight: 700;
+	color: var(--ink);
+	margin-bottom: 0.55rem;
 }
 
 /* ---- layout helpers ---- */
@@ -183,14 +203,29 @@ button {
 	margin-inline: auto;
 }
 .card {
-	background: var(--card);
+	background: var(--card-translucent);
 	border: 1px solid var(--line);
-	border-radius: var(--radius);
-	box-shadow: var(--shadow-sm);
+	border-radius: var(--radius-lg);
+	box-shadow: var(--shadow-md);
 }
 
 .muted {
 	color: var(--ink-faint);
+}
+
+/* subtle entrance used across hero / form (design: floatUp) */
+@keyframes floatUp {
+	from {
+		opacity: 0;
+		transform: translateY(14px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+.float-in {
+	animation: floatUp 0.6s ease both;
 }
 .center {
 	text-align: center;

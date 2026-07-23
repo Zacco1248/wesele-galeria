@@ -36,7 +36,7 @@
 </div>
 
 <header class="hero">
-	<div class="container">
+	<div class="container float-in">
 		<Florals variant="sprig" width="200" />
 		<p class="kicker">Wspólna galeria wspomnień</p>
 		<h1>{data.event.title}</h1>
@@ -52,7 +52,7 @@
 </header>
 
 <main class="container">
-	<section id="dodaj" class="upload-section container-narrow">
+	<section id="dodaj" class="upload-section container-narrow float-in">
 		<Uploader
 			imageMb={data.limits.imageMb}
 			videoMb={data.limits.videoMb}
@@ -74,7 +74,7 @@
 
 <footer class="footer">
 	<div class="container center muted">
-		<p>Dziękujemy, że jesteście z nami 🤍</p>
+		<p>Dziękujemy, że jesteście z nami 💛</p>
 	</div>
 </footer>
 
@@ -99,7 +99,8 @@
 		text-transform: uppercase;
 		letter-spacing: 0.28em;
 		font-size: 0.72rem;
-		color: var(--gold-deep);
+		color: var(--gold);
+		font-weight: 700;
 		margin: 0 0 0.6rem;
 	}
 	.hero h1 {
@@ -122,9 +123,9 @@
 		font-size: 0.95rem;
 	}
 	.counter strong {
-		font-family: var(--font-serif);
-		font-size: 1.3rem;
-		color: var(--gold-deep);
+		font-weight: 800;
+		font-size: 1.15rem;
+		color: var(--gold);
 	}
 	.upload-section {
 		scroll-margin-top: 1rem;

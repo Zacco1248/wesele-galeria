@@ -204,32 +204,34 @@
 		gap: 0.5rem;
 	}
 	.dropzone {
-		margin-top: 0.4rem;
+		margin-top: 0.9rem;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		gap: 0.25rem;
-		padding: 1.6rem 1rem;
-		border: 2px dashed var(--line);
-		border-radius: var(--radius);
-		background: linear-gradient(180deg, #fff, var(--paper));
+		gap: 0.35rem;
+		padding: 1.9rem 1.1rem;
+		border: 2px dashed #f0cf6a;
+		border-radius: 18px;
+		background: linear-gradient(180deg, #fffbe9, #fff7d6);
 		cursor: pointer;
 		text-align: center;
 		transition: border-color 0.15s ease, background 0.15s ease;
 	}
 	.dropzone:hover {
 		border-color: var(--gold);
+		background: linear-gradient(180deg, #fff8d8, #ffefb0);
 	}
 	.dz-emoji {
-		font-size: 2rem;
+		font-size: 2.1rem;
 	}
 	.dz-title {
-		font-weight: 700;
-		font-size: 1.05rem;
-		color: var(--ink);
+		font-weight: 800;
+		font-size: 1.12rem;
+		color: var(--ink-strong);
 	}
 	.dz-sub {
-		font-size: 0.82rem;
+		font-size: 0.84rem;
+		color: var(--ink-faint);
 	}
 	.status-row {
 		display: flex;

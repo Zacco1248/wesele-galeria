@@ -56,12 +56,12 @@
 		display: inline-flex;
 		align-items: center;
 		gap: 0.5rem;
-		padding: 0.35rem 0.85rem;
+		padding: 0.44rem 0.9rem;
 		border-radius: 999px;
-		background: var(--card);
-		border: 1px solid var(--line);
-		box-shadow: var(--shadow-sm);
-		font-size: 0.85rem;
+		background: rgba(255, 255, 255, 0.72);
+		border: 1px solid #f4dd93;
+		box-shadow: 0 4px 14px rgba(220, 180, 60, 0.14);
+		font-size: 0.82rem;
 		color: var(--ink-soft);
 		font-weight: 600;
 		font-variant-numeric: tabular-nums;
@@ -71,18 +71,15 @@
 		height: 8px;
 		border-radius: 50%;
 		background: var(--ok);
-		box-shadow: 0 0 0 0 rgba(111, 143, 94, 0.6);
-		animation: ping 1.8s ease-out infinite;
+		animation: pulseDot 1.8s ease-in-out infinite;
 	}
-	@keyframes ping {
-		0% {
-			box-shadow: 0 0 0 0 rgba(111, 143, 94, 0.55);
-		}
-		70% {
-			box-shadow: 0 0 0 8px rgba(111, 143, 94, 0);
-		}
+	@keyframes pulseDot {
+		0%,
 		100% {
-			box-shadow: 0 0 0 0 rgba(111, 143, 94, 0);
+			opacity: 1;
+		}
+		50% {
+			opacity: 0.35;
 		}
 	}
 </style>
