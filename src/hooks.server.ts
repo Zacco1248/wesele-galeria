@@ -8,13 +8,25 @@ import { startWorker } from '$lib/server/worker';
 // Kick off the in-process thumbnail worker once, at server startup.
 startWorker();
 
-/** R2 hosts that the browser legitimately talks to (uploads + media). */
+/**
+ * R2 hosts the browser legitimately talks to (direct uploads + media redirects).
+ * The AWS SDK uses virtual-hosted-style URLs — `<bucket>.<account>.r2.cloudflarestorage.com`
+ * — so we must allow the bucket subdomain, not just the account endpoint. A wildcard
+ * over the R2 domain covers both path-style and virtual-hosted-style.
+ */
 function r2Hosts(): string {
 	const hosts = new Set<string>();
 	const endpoint = r2Endpoint();
 	if (endpoint) {
 		try {
-			hosts.add(new URL(endpoint).origin);
+			const url = new URL(endpoint);
+			hosts.add(url.origin);
+			if (url.host.endsWith('.r2.cloudflarestorage.com')) {
+				hosts.add('https://*.r2.cloudflarestorage.com');
+			} else if (config.r2.bucket) {
+				// custom S3-compatible endpoint: also allow the bucket subdomain form
+				hosts.add(`${url.protocol}//${config.r2.bucket}.${url.host}`);
+			}
 		} catch {
 			/* ignore */
 		}

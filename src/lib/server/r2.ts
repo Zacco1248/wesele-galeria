@@ -24,8 +24,11 @@ export function r2(): S3Client {
 			accessKeyId: config.r2.accessKeyId,
 			secretAccessKey: config.r2.secretAccessKey
 		},
-		// R2 requires path-style-compatible signing; the SDK handles this fine.
-		forcePathStyle: false
+		forcePathStyle: false,
+		// Don't bake CRC32 integrity params into presigned URLs — R2 doesn't need them
+		// and they complicate direct browser PUTs. (AWS SDK v3 defaults them ON.)
+		requestChecksumCalculation: 'WHEN_REQUIRED',
+		responseChecksumValidation: 'WHEN_REQUIRED'
 	});
 	return _client;
 }
