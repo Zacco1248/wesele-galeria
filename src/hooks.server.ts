@@ -33,7 +33,11 @@ function cspHeader(): string {
 	const r2 = r2Hosts();
 	return [
 		`default-src 'self'`,
-		`script-src 'self'`,
+		// SvelteKit ships a small inline bootstrap script per page to start hydration.
+		// Without 'unsafe-inline' (or a nonce) it is blocked and the app never becomes
+		// interactive — uploads, lightbox, hearts, presence all die. The app renders no
+		// user-controlled markup via {@html}, so the XSS surface here is minimal.
+		`script-src 'self' 'unsafe-inline'`,
 		`style-src 'self' 'unsafe-inline'`,
 		`img-src 'self' data: blob: ${r2}`.trim(),
 		`media-src 'self' blob: ${r2}`.trim(),
