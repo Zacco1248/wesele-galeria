@@ -37,6 +37,7 @@ const opts = {
 	pngSize: Number.parseInt(args.size || '2000', 10),
 	margin: Number.parseInt(args.margin || '4', 10), // quiet zone in modules
 	logoPath: args.logo || null,
+	logoScale: Number.parseFloat(args['logo-scale'] || '0.24'), // logo width as fraction of QR (max ~0.30 for ECC H)
 	label: args.label || null
 };
 
@@ -83,7 +84,7 @@ async function generate(targetUrl, basePath, personName) {
 	// logo w centrum: białe zaokrąglone tło + obraz na ~24% szerokości
 	let logoSvg = '';
 	if (logoDataUri) {
-		const logoFrac = 0.24;
+		const logoFrac = opts.logoScale;
 		const logoSize = dim * logoFrac;
 		const pad = logoSize * 0.16;
 		const box = logoSize + pad * 2;
