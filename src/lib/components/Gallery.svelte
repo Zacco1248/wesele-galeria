@@ -41,18 +41,47 @@
 		}
 	}
 
-	/** Pull newest items and prepend any we don't have yet. Called after uploads + on a timer. */
+	/**
+	 * Pull the newest items: prepend any we don't have yet AND update items we
+	 * already show (so a thumbnail that finished processing after upload appears
+	 * without a full page reload). Called after uploads + on a timer.
+	 */
 	export async function refresh() {
 		try {
 			const res = await fetch('/api/gallery?limit=40');
 			const data = await res.json();
-			const existing = new Set(items.map((i) => i.id));
-			const fresh = (data.items as GalleryItem[]).filter((i) => !existing.has(i.id));
-			if (fresh.length) items = [...fresh, ...items];
+			const byId = new Map(items.map((i) => [i.id, i]));
+			const prepend: GalleryItem[] = [];
+			for (const it of data.items as GalleryItem[]) {
+				const cur = byId.get(it.id);
+				if (cur) {
+					// refresh mutable fields in place (deep-reactive $state)
+					cur.processed = it.processed;
+					cur.hasThumb = it.hasThumb;
+					cur.hearts = it.hearts;
+					cur.width = it.width;
+					cur.height = it.height;
+					cur.duration = it.duration;
+				} else {
+					prepend.push(it);
+				}
+			}
+			if (prepend.length) items = [...prepend, ...items];
 			total = data.total;
 		} catch {
 			/* offline — ignore */
 		}
+		scheduleNext();
+	}
+
+	// Adaptive polling: fast (3s) while anything is still processing, else 15s.
+	let pollStopped = false;
+	let pollTimer: ReturnType<typeof setTimeout> | undefined;
+	function scheduleNext() {
+		clearTimeout(pollTimer);
+		if (pollStopped) return;
+		const pending = items.some((i) => !i.processed);
+		pollTimer = setTimeout(refresh, pending ? 3_000 : 15_000);
 	}
 
 	async function toggleHeart(item: GalleryItem, e: MouseEvent) {
@@ -74,10 +103,15 @@
 		}
 	}
 
-	// live refresh every 15s
+	// Kick off the live refresh loop; scheduleNext() (called at the end of every
+	// refresh, including the manual one after an upload) keeps the cadence adaptive.
 	$effect(() => {
-		const t = setInterval(refresh, 15_000);
-		return () => clearInterval(t);
+		pollStopped = false;
+		pollTimer = setTimeout(refresh, 5_000);
+		return () => {
+			pollStopped = true;
+			clearTimeout(pollTimer);
+		};
 	});
 
 	// infinite scroll sentinel
