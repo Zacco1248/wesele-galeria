@@ -143,22 +143,22 @@
 		bind:value={guestName}
 	/>
 
-	<!-- hidden inputs: camera capture opens the camera directly; the other picks from the gallery/files -->
-	<input
-		bind:this={cameraInput}
-		type="file"
-		accept="image/*,video/*"
-		capture="environment"
-		onchange={(e) => addFiles((e.currentTarget as HTMLInputElement).files)}
-		hidden
-	/>
-
 	<div class="pickers">
-		<button type="button" class="picker cam" onclick={() => cameraInput?.click()}>
+		<!-- photo-only + capture => opens the camera directly (mixing image+video makes
+		     the browser fall back to the normal picker). A <label> is the most reliable trigger. -->
+		<label class="picker cam">
+			<input
+				bind:this={cameraInput}
+				type="file"
+				accept="image/*"
+				capture="environment"
+				onchange={(e) => addFiles((e.currentTarget as HTMLInputElement).files)}
+				hidden
+			/>
 			<span class="pk-emoji">📷</span>
 			<span class="pk-title">Zrób zdjęcie</span>
 			<span class="pk-sub">Aparatem, na żywo</span>
-		</button>
+		</label>
 
 		<label class="picker gallery" class:busy={uploading}>
 			<input
