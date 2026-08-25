@@ -20,7 +20,7 @@
 	let localId = 0;
 
 	const CONCURRENCY = 2;
-	const PREVIEW_MAX = 60 * 1024 * 1024; // above this, skip preview to protect low-memory phones
+	const PREVIEW_MAX = 12 * 1024 * 1024; // above this, skip preview to protect low-memory phones
 
 	/**
 	 * Build a tiny preview thumbnail without decoding the full-resolution image.
@@ -77,7 +77,7 @@
 		return `${(bytes / Math.pow(1024, i)).toFixed(i ? 1 : 0)} ${u[i]}`;
 	}
 
-	function addFiles(files: FileList | null) {
+	function addFiles(files: FileList | null, fromCamera = false) {
 		if (!files) return;
 		for (const file of Array.from(files)) {
 			const mime = resolveMime(file);
@@ -116,10 +116,10 @@
 					error: tooBig ? `Za duży plik (limit ${kind === 'video' ? videoMb : imageMb} MB)` : undefined
 				}
 			];
-			// Generate a small preview WITHOUT decoding the full-resolution image.
-			// Phone cameras (Samsung/Honor 50–108 MP) would otherwise blow the tab's
-			// memory just to show a 44px thumbnail. Skip absurdly large files entirely.
-			if (kind === 'image' && !tooBig && file.size <= PREVIEW_MAX) {
+			// Previews require decoding the image, which crashes low-memory phones on
+			// huge files. Skip decoding for camera captures entirely (you just took the
+			// shot — an icon is fine) and cap the gallery path conservatively.
+			if (kind === 'image' && !tooBig && !fromCamera && file.size <= PREVIEW_MAX) {
 				schedulePreview(itemId, file);
 			}
 		}
@@ -203,7 +203,7 @@
 				type="file"
 				accept="image/*"
 				capture="environment"
-				onchange={(e) => addFiles((e.currentTarget as HTMLInputElement).files)}
+				onchange={(e) => addFiles((e.currentTarget as HTMLInputElement).files, true)}
 				hidden
 			/>
 			<span class="pk-emoji">📷</span>
