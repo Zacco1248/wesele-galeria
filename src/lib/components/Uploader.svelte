@@ -20,6 +20,51 @@
 	let localId = 0;
 
 	const CONCURRENCY = 2;
+	const PREVIEW_MAX = 60 * 1024 * 1024; // above this, skip preview to protect low-memory phones
+
+	/**
+	 * Build a tiny preview thumbnail without decoding the full-resolution image.
+	 * createImageBitmap with resizeWidth uses scaled decoding, so a 108 MP camera
+	 * photo never fully expands in memory (which was crashing Chrome on Samsung/Honor).
+	 */
+	// Bound how many previews decode at once, so selecting many large photos from
+	// the gallery can't spike memory on weaker phones.
+	const previewJobs: { id: string; file: File }[] = [];
+	let previewActive = 0;
+	function schedulePreview(id: string, file: File) {
+		previewJobs.push({ id, file });
+		pumpPreviews();
+	}
+	function pumpPreviews() {
+		while (previewActive < 2 && previewJobs.length) {
+			const job = previewJobs.shift()!;
+			previewActive++;
+			makePreview(job.id, job.file).finally(() => {
+				previewActive--;
+				pumpPreviews();
+			});
+		}
+	}
+
+	async function makePreview(id: string, file: File) {
+		try {
+			if (typeof createImageBitmap !== 'function') return;
+			const bmp = await createImageBitmap(file, { resizeWidth: 120, resizeQuality: 'low' });
+			const canvas = document.createElement('canvas');
+			canvas.width = bmp.width;
+			canvas.height = bmp.height;
+			canvas.getContext('2d')?.drawImage(bmp, 0, 0);
+			bmp.close();
+			const url = canvas.toDataURL('image/jpeg', 0.6);
+			const it = queue.find((q) => q.id === id);
+			if (it) {
+				it.previewUrl = url;
+				queue = queue;
+			}
+		} catch {
+			/* no preview — the list just shows an icon */
+		}
+	}
 
 	const activeCount = $derived(
 		queue.filter((q) => q.status === 'uploading' || q.status === 'queued').length
@@ -56,20 +101,27 @@
 			}
 			const limit = (kind === 'video' ? videoMb : imageMb) * 1024 * 1024;
 			const tooBig = file.size > limit;
+			const itemId = `f${localId++}`;
 			queue = [
 				...queue,
 				{
-					id: `f${localId++}`,
+					id: itemId,
 					file,
 					name: file.name,
 					sizeLabel: humanSize(file.size),
 					kind,
-					previewUrl: kind === 'image' ? URL.createObjectURL(file) : null,
+					previewUrl: null,
 					progress: 0,
 					status: tooBig ? 'error' : 'queued',
 					error: tooBig ? `Za duży plik (limit ${kind === 'video' ? videoMb : imageMb} MB)` : undefined
 				}
 			];
+			// Generate a small preview WITHOUT decoding the full-resolution image.
+			// Phone cameras (Samsung/Honor 50–108 MP) would otherwise blow the tab's
+			// memory just to show a 44px thumbnail. Skip absurdly large files entirely.
+			if (kind === 'image' && !tooBig && file.size <= PREVIEW_MAX) {
+				schedulePreview(itemId, file);
+			}
 		}
 		if (fileInput) fileInput.value = '';
 		if (cameraInput) cameraInput.value = ''; // allow retaking the same shot
@@ -127,7 +179,6 @@
 	}
 
 	function clearDone() {
-		for (const q of queue) if (q.previewUrl && q.status === 'done') URL.revokeObjectURL(q.previewUrl);
 		queue = queue.filter((q) => q.status !== 'done');
 	}
 </script>
