@@ -20,7 +20,7 @@
 	let localId = 0;
 
 	const CONCURRENCY = 2;
-	const PREVIEW_MAX = 12 * 1024 * 1024; // above this, skip preview to protect low-memory phones
+	const PREVIEW_MAX = 5 * 1024 * 1024; // above this, skip preview decode to protect low-memory phones
 
 	/**
 	 * Build a tiny preview thumbnail without decoding the full-resolution image.
@@ -198,17 +198,19 @@
 		<!-- photo-only + capture => opens the camera directly (mixing image+video makes
 		     the browser fall back to the normal picker). A <label> is the most reliable trigger. -->
 		<label class="picker cam">
+			<!-- NO `capture`: on Samsung/Honor the forced camera intent makes Chrome
+			     materialize the full-res photo and run out of memory. Without it the
+			     native sheet still offers the camera, but returns a lightweight file. -->
 			<input
 				bind:this={cameraInput}
 				type="file"
 				accept="image/*"
-				capture="environment"
 				onchange={(e) => addFiles((e.currentTarget as HTMLInputElement).files, true)}
 				hidden
 			/>
 			<span class="pk-emoji">📷</span>
 			<span class="pk-title">Zrób zdjęcie</span>
-			<span class="pk-sub">Aparatem, na żywo</span>
+			<span class="pk-sub">Aparat lub zdjęcie</span>
 		</label>
 
 		<label class="picker gallery" class:busy={uploading}>
