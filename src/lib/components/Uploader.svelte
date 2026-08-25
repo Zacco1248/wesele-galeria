@@ -198,19 +198,21 @@
 		<!-- photo-only + capture => opens the camera directly (mixing image+video makes
 		     the browser fall back to the normal picker). A <label> is the most reliable trigger. -->
 		<label class="picker cam">
-			<!-- NO `capture`: on Samsung/Honor the forced camera intent makes Chrome
-			     materialize the full-res photo and run out of memory. Without it the
-			     native sheet still offers the camera, but returns a lightweight file. -->
+			<!-- `capture` opens the camera directly (the requested behaviour). On some
+			     max-resolution Samsung/Honor phones Chrome may OOM materializing the shot;
+			     those guests fall back to "Wybierz z galerii". We skip our own preview
+			     decode for camera shots (fromCamera=true) to not add to the pressure. -->
 			<input
 				bind:this={cameraInput}
 				type="file"
 				accept="image/*"
+				capture="environment"
 				onchange={(e) => addFiles((e.currentTarget as HTMLInputElement).files, true)}
 				hidden
 			/>
 			<span class="pk-emoji">📷</span>
 			<span class="pk-title">Zrób zdjęcie</span>
-			<span class="pk-sub">Aparat lub zdjęcie</span>
+			<span class="pk-sub">Aparatem, na żywo</span>
 		</label>
 
 		<label class="picker gallery" class:busy={uploading}>
